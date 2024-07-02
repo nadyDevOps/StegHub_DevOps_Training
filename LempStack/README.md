@@ -45,7 +45,7 @@ Again, use 'apt' to acquire and install this software:
 
 sudo apt install mysql-server
 
-![alt text](./image/mysqlSecureInstal.png)
+![alt text](./image/mysqlinstall.png)
 
 When the installation is finished, log in to the MySQL console by typing:
 
