@@ -17,25 +17,23 @@ STEP 1 - Installing the Nginx Web Server
 sudo apt update
 sudo apt upgrade -y
 
-![alt text](Images/ec2_update.PNG)
-
-![alt text](Images/upgrade-ec2-packages.PNG)
+![alt text](./image/ec2Connect.png)
 
 Install the nginx package
 
-![alt text](Images/nginx_installed.PNG)
+![alt text](./image/nginxInstal.png)
 
 Run the commaand below to confirm the status of nginx.
 
 sudo systemctl status nginx
 
-![alt text](Images/nginx_status_check.PNG)
+![alt text](./image/nginxStatus.png)
 
 Access nginx locally on the Ubuntu shell
 
 curl http://localhost:80
 
-![alt text](Images/curl_access.PNG)
+![alt text](./image/curlLocalhost.png)
 
 Access the Nginx web server using the public IP on port 80
 
