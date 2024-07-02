@@ -39,32 +39,27 @@ Access the Nginx web server using the public IP on port 80
 
 ![alt text](Images/nginx_default_page.PNG)
 
-Another way to retrieve your Public IP address, other than to check it in AAWS Web console is to use the following command:
-
-![alt text](Images/Curl_authorized.PNG)
-
-
 STEP 2- Installing MySQL
 
 Again, use 'apt' to acquire and install this software:
 
 sudo apt install mysql-server
 
-![alt text](Images/my_sql_server_installed.PNG)
+![alt text](./image/mysqlSecureInstal.png)
 
 When the installation is finished, log in to the MySQL console by typing:
 
 $ sudo mysql
 
-![alt text](Images/root_password_set.PNG)
-
 Set a password for root user using mysql_native_password as default authentication method.
 
-Here, the user's password was defined as "Pasw0rd123$"
+Here, the user's password was defined as "PassWord.1235"
 
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Passw0rd123$';
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'PassWord.1235';
 
 And type 'exit'.
+
+![alt text](./image/mysqlConnect.png)
 
 After changing root user password, log in to MySQL console.
 
@@ -72,7 +67,9 @@ A command prompt for password was noticed after running the command below.
 
 sudo mysql -p
 
-![alt text](Images/mysql_console_accessed.PNG)
+![alt text](./image/mysqlSecureInstal.png)
+
+![alt text](./image/mysqlPassLogin.png)
 
 Exit MySQL shell
 
