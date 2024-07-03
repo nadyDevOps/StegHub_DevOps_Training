@@ -20,18 +20,24 @@ sudo apt update
 ![alt text](./image/sudoUpdate.png)
 
 Install the nginx package
+```
+sudo apt install nginx
+```
 
 ![alt text](./image/nginxInstal.png)
 
 Run the commaand below to confirm the status of nginx.
-
+```
 sudo systemctl status nginx
+```
 
 ![alt text](./image/nginxStatus.png)
 
 Access nginx locally on the Ubuntu shell
-
+```
 curl http://localhost:80
+
+```
 
 ![alt text](./image/curlLocalhost.png)
 
@@ -43,19 +49,25 @@ STEP 2- Installing MySQL
 
 Again, use 'apt' to acquire and install this software:
 
+```
 sudo apt install mysql-server
+```
 
 ![alt text](./image/mysqlinstall.png)
 
 When the installation is finished, log in to the MySQL console by typing:
 
-$ sudo mysql
+```
+sudo mysql
+```
 
 Set a password for root user using mysql_native_password as default authentication method.
 
 Here, the user's password was defined as "PassWord.1235"
 
+```
 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'PassWord.1235';
+```
 
 And type 'exit'.
 
@@ -65,7 +77,9 @@ After changing root user password, log in to MySQL console.
 
 A command prompt for password was noticed after running the command below.
 
+```
 sudo mysql -p
+```
 
 ![alt text](./image/mysqlSecureInstal.png)
 
@@ -73,7 +87,9 @@ sudo mysql -p
 
 Exit MySQL shell
 
+```
 exit
+```
 
 
 STEP 3 - Install PHP Package
