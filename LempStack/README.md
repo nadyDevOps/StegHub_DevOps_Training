@@ -8,16 +8,16 @@ Creating EC2 Instance and establishing SSH Connection.
 
 Created an AWS Account after which a new EC2 instance of the t2.micro family within the free tier was created with an Ubuntu Server Installed. A new key pair was created and downloaded to the local machine.
 
-![alt text](Images/ec2_ssh_access.PNG)
+![alt text](./image/ec2Connect.png)
 
 STEP 1 - Installing the Nginx Web Server 
 
- Update and Update the server's package.
-
+ Update the server's package.
+```
 sudo apt update
-sudo apt upgrade -y
+```
 
-![alt text](./image/ec2Connect.png)
+![alt text](./image/sudoUpdate.png)
 
 Install the nginx package
 
@@ -37,7 +37,7 @@ curl http://localhost:80
 
 Access the Nginx web server using the public IP on port 80
 
-![alt text](Images/nginx_default_page.PNG)
+![alt text](./image/nginxDefaultPage.png)
 
 STEP 2- Installing MySQL
 
