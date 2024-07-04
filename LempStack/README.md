@@ -1,6 +1,6 @@
-LEMP STACK IMPLEMENTATION IN AWS
+# LEMP STACK IMPLEMENTATION IN AWS
 
-Introduction:
+## Introduction:
 
 The LEMP stack is a popular open-source web development platform that consists of four main components: Linux, Nginx, MySQL, and PHP (or sometimes Perl or Python). This documentation outlines the setup, configuration, and usage of the LEMP stack.
 
@@ -10,7 +10,7 @@ Created an AWS Account after which a new EC2 instance of the t2.micro family wit
 
 ![alt text](./image/ec2Connect.png)
 
-STEP 1 - Installing the Nginx Web Server 
+## STEP 1 - Installing the Nginx Web Server 
 
  Update the server's package.
 ```
@@ -45,7 +45,7 @@ Access the Nginx web server using the public IP on port 80
 
 ![alt text](./image/nginxDefaultPage.png)
 
-STEP 2- Installing MySQL
+## STEP 2- Installing MySQL
 
 Again, use 'apt' to acquire and install this software:
 
@@ -92,7 +92,7 @@ exit
 ```
 
 
-STEP 3 - Install PHP Package
+## STEP 3 - Install PHP Package
 
 Install php-fpm (PHP fastCGI process manager) and tell nginx to pass PHP requests to this software for processing. Also, install php-mysql, a php module that allows PHP to communicate with MySQL-based databases. Core PHP packages will automatically be installed as dependencies.
 
@@ -105,7 +105,7 @@ $ sudo apt install php-fpm php-mysql -y
 
 ![alt text](./image/phpInstal.png)
 
-# Step 4 - Configuring Nginx to Use PHP Processor
+## Step 4 - Configuring Nginx to Use PHP Processor
 
 When using the Nginx web server, we can create server blocks (similar to virtual hosts in Apache) to encapsulate configuration details and host more than one domain on a single server. In this guide, we will use `projectLEMP` as an example domain name.
 
@@ -204,7 +204,7 @@ If you see the text from the `echo` command you wrote to the `index.html` file, 
 You can leave this file in place as a temporary landing page for your application until you set up an `index.php` file to replace it. Once you do that, remember to remove or rename the `index.html` file from your document root, as it would take precedence over an `index.php` file by default.
 
 
-# STEP 5 - Test PHP with Nginx
+## STEP 5 - Test PHP with Nginx
 
 After successfully setting up the LEMP stack, it is important to test to validate that Nginx handles .php correctly.
 
@@ -226,11 +226,7 @@ After checking the relevant information about the server through this page, It�
 $ sudo rm /var/www/projectLEMP/info.php
 ```
 
-# STEP 6 - Retrieving data from MySQL database with PHP
-# DevOpsTraining
-**DevOps/Cloud Training Material**
-
-# Step 6 - Retrieving Data from MySQL Database with PHP
+## Step 6 - Retrieving Data from MySQL Database with PHP
 
 In this step, you will create a test database (DB) with a simple "To do list" and configure access to it, so the Nginx website will be able to query data from the DB and display it.
 
@@ -238,7 +234,7 @@ At the time of this writing, the native MySQL PHP library `mysqlnd` doesn’t su
 
 We will create a database named `example_database` and a user named `example_user`, but you can replace these names with different values.
 
-## Step 6.1: Create the Database and User
+### Step 6.1: Create the Database and User
 
 First, connect to the MySQL console using the root account:
 
@@ -267,7 +263,7 @@ Now exit the MySQL shell with:
 
     mysql> exit
 
-## Step 6.2: Verify the New User
+### Step 6.2: Verify the New User
 
 You can test if the new user has the proper permissions by logging in to the MySQL console again, this time using the custom user credentials:
 
@@ -281,7 +277,7 @@ This will give you the following output:
 
 ![alt text](./image/retrieveData3.png)
 
-## Step 6.3: Create a Test Table
+### Step 6.3: Create a Test Table
 
 Next, we’ll create a test table named `todo_list`. From the MySQL console, run the following statement:
 
@@ -309,7 +305,7 @@ After confirming that you have valid data in your test table, you can exit the M
 
     mysql> exit
 
-## Step 6.4: Create a PHP Script to Retrieve Data
+### Step 6.4: Create a PHP Script to Retrieve Data
 
 Now you can create a PHP script that will connect to MySQL and query for your content. Create a new PHP file in your custom web root directory using your preferred editor. We’ll use `nano` for that:
 
@@ -339,7 +335,7 @@ Copy this content into your `todo_list.php` script:
 
 Save and close the file when you are done editing.
 
-## Step 6.5: Access the PHP Script
+### Step 6.5: Access the PHP Script
 
 You can now access this page in your web browser by visiting the domain name or public IP address configured for your website, followed by `/todo_list.php`:
 
