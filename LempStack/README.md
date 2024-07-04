@@ -103,96 +103,108 @@ php-mysql
 
 $ sudo apt install php-fpm php-mysql -y
 
-![alt text](Images/php_installed.PNG)
+![alt text](./image/phpInstal.png)
 
-STEP 4 - Configuring Nginx to Use PHP Processor
+# Step 4 - Configuring Nginx to Use PHP Processor
 
-Create the root web directory for projectLEMP domain as follows:
+When using the Nginx web server, we can create server blocks (similar to virtual hosts in Apache) to encapsulate configuration details and host more than one domain on a single server. In this guide, we will use `projectLEMP` as an example domain name.
 
-$ sudo mkdir /var/www/projectLEMP
+On Ubuntu 20.04, Nginx has one server block enabled by default and is configured to serve documents out of a directory at `/var/www/html`. While this works well for a single site, it can become difficult to manage if you are hosting multiple sites. Instead of modifying `/var/www/html`, we’ll create a directory structure within `/var/www` for the `your_domain` website, leaving `/var/www/html` in place as the default directory to be served if a client request does not match any other sites.
 
-Next, assign ownership of the directory with the $USER environment variaable, which will reference the current system user:
+Create the root web directory for `your_domain` as follows:
 
-$ sudo chown -R $USER:$USER /var/www/projectLEMP
+    sudo mkdir /var/www/projectLEMP
 
-![alt text](Images/ProjectLemp_dir_created.PNG)
+Next, assign ownership of the directory with the `$USER` environment variable, which will reference your current system user:
 
-Create a new configuration file in Nginx’s “sites-available” directory.
+    sudo chown -R $USER:$USER /var/www/projectLEMP
 
-$ sudo nano /etc/nginx/sites-available/projectLEMP
+Then, open a new configuration file in Nginx’s `sites-available` directory using your preferred command-line editor. Here, we’ll use `nano`:
 
-Paste in the following bare-bones configuration and it is important to note and modify your php version and aapply to your script:
+    sudo nano /etc/nginx/sites-available/projectLEMP
 
-server {
-  listen 80;
-  server_name projectLEMP www.projectLEMP;
-  root /var/www/projectLEMP;
+This will create a new blank file. Paste in the following bare-bones configuration:
 
-  index index.html index.htm index.php;
+    # /etc/nginx/sites-available/projectLEMP
 
-  location / {
-    try_files $uri $uri/ =404;
-  }
+    server {
+        listen 80;
+        server_name projectLEMP www.projectLEMP;
+        root /var/www/projectLEMP;
 
-  location ~ \.php$ {
-    include snippets/fastcgi-php.conf;
-    fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
-  }
+        index index.html index.htm index.php;
 
-  location ~ /\.ht {
-    deny all;
-  }
-}
+        location / {
+            try_files $uri $uri/ =404;
+        }
 
-Here’s what each directives and location blocks does:
+        location ~ \.php$ {
+            include snippets/fastcgi-php.conf;
+            fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+        }
 
-- listen - Defines what port nginx listens on. In this case it will listen on port 80, the default port for HTTP.
+        location ~ /\.ht {
+            deny all;
+        }
+    }
 
-- root - Defines the document root where the files served by this website are stored.
+Here’s what each of these directives and location blocks do:
 
-- index - Defines in which order Nginx will prioritize the index files for this website. It is a common practice to list index.html files with a higher precedence than index.php files to allow for quickly setting up a maintenance landing page for PHP applications. You can adjust these settings to better suit your application needs.
+- **listen** — Defines what port Nginx will listen on. In this case, it will listen on port 80, the default port for HTTP.
+- **root** — Defines the document root where the files served by this website are stored.
+- **index** — Defines in which order Nginx will prioritize index files for this website. It is a common practice to list `index.html` files with a higher precedence than `index.php` files to allow for quickly setting up a maintenance landing page in PHP applications. You can adjust these settings to better suit your application needs.
+- **server_name** — Defines which domain names and/or IP addresses this server block should respond for. Point this directive to your server’s domain name or public IP address.
+- **location /** — The first location block includes a `try_files` directive, which checks for the existence of files or directories matching a URI request. If Nginx cannot find the appropriate resource, it will return a 404 error.
+- **location ~ \.php$** — This location block handles the actual PHP processing by pointing Nginx to the `fastcgi-php.conf` configuration file and the `php8.1-fpm.sock` file, which declares what socket is associated with php-fpm.
+- **location ~ /\.ht** — The last location block deals with `.htaccess` files, which Nginx does not process. By adding the `deny all` directive, if any `.htaccess` files happen to find their way into the document root, they will not be served to visitors.
 
-- server_name - Defines which domain name and/or IP addresses the server block should respond for. Point this directive to your domain name or public IP address.
+When you’re done editing, save and close the file. If you’re using `nano`, you can do so by typing `CTRL+X` and then `y` and `ENTER` to confirm.
 
-- location / - The first location block includes the try_files directive, which checks for the existence of files or directories matching a URI request. If Nginx cannot find the appropriate result, it will return a 404 error.
+Activate your configuration by linking to the config file from Nginx’s `sites-enabled` directory:
 
-- location ~ .php$ - This location handles the actual PHP processing by pointing Nginx to the fastcgi-php.conf configuration file and the php7.4-fpm.sock file, which declares what socket is associated with php-fpm.
+    sudo ln -s /etc/nginx/sites-available/projectLEMP /etc/nginx/sites-enabled/
 
-- location ~ /.ht - The last location block deals with .htaccess files, which Nginx does not process. By adding the deny all directive, if any .htaccess files happen to find their way into the document root, they will not be served to visitors.
+This will tell Nginx to use the configuration next time it is reloaded. You can test your configuration for syntax errors by typing:
 
-Activate the configuration by linking to the config file from Nginx’s sites-enabled directory
+    sudo nginx -t
 
-$ sudo ln -s /etc/nginx/sites-available/projectLEMP /etc/nginx/sites-enabled/
+You shall see the following message:
 
-This will tell Nginx to use this configuration when next it is reloaded.
+    nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+    nginx: configuration file /etc/nginx/nginx.conf test is successful
 
-Test the configuration for syntax error
+If any errors are reported, go back to your configuration file to review its contents before continuing.
 
-$ sudo nginx -t
+We also need to disable the default Nginx host that is currently configured to listen on port 80. For this, run:
 
-![alt text](Images/nginx_syntax_error_check.PNG)
+    sudo unlink /etc/nginx/sites-enabled/default
 
-Disable the default Nginx host that currently configured to listen on port 80
+When you are ready, reload Nginx to apply the changes:
 
-$ sudo unlink /etc/nginx/sites-enabled/default
+    sudo systemctl reload nginx
+![alt text](./image/nginxConfig1.png)
+![alt text](./image/nginxConfig2.png)
 
-![alt text](Images/unlink_and_reload_of_nginx.PNG)
+Your new website is now active, but the web root `/var/www/projectLEMP` is still empty. Create an `index.html` file in that location so that we can test that your new server block works as expected:
 
-The new website is now active but the web root /var/www/projectLEMP is still empty. Create an index.html file in this location so to test the virtual host work as expected.
+    sudo echo 'Hello LEMP from hostname' $(curl -s http://169.254.169.254/latest/meta-data/public-hostname) 'with public IP' $(curl -s http://169.254.169.254/latest/meta-data/public-ipv4) > /var/www/projectLEMP/index.html
 
-$ sudo echo ‘Hello LEMP from hostname’ $(curl -s http://169.254.169.254/latest/meta-data/public-hostname) ‘with public IP’ $(curl -s http://169.254.169.254/latest/meta-data/public-ipv4) > /var/www/projectLEMP/index.html
+![alt text](./image/nginxConfig3.png)
 
-![alt text](Images/index_file_created.PNG)
+Now go to your browser and try to open your website URL using the IP address:
 
-When setup correctly, the following should be the result when the public IP or Public DNS is viewed in a browser:
+    http://<Public-IP-Address>:80
 
-![alt text](Images/site_url_ip_access.PNG)
+![alt text](./image/nginxSite.png)
 
-Open it with public dns name (port is optional)
+If you see the text from the `echo` command you wrote to the `index.html` file, then it means your Nginx site is working as expected. In the output, you will see your server's public hostname (DNS name) and public IP address. You can also access your website in your browser by public DNS name, not only by IP - try it out, the result must be the same (port is optional):
 
-![alt text](Images/site_url_accessed_via_dns.PNG)
+    http://<Public-DNS-Name>:80
 
-STEP 5 - Test PHP with Nginx
+You can leave this file in place as a temporary landing page for your application until you set up an `index.php` file to replace it. Once you do that, remember to remove or rename the `index.html` file from your document root, as it would take precedence over an `index.php` file by default.
+
+
+# STEP 5 - Test PHP with Nginx
 
 After successfully setting up the LEMP stack, it is important to test to validate that Nginx handles .php correctly.
 
@@ -206,106 +218,144 @@ Access the page on the browser and attach /info.php
 
 http://public-ip/info.php
 
-![alt text](Images/php_page.PNG)
+![alt text](./image/serverInfo.png)
 
 After checking the relevant information about the server through this page, It’s best to remove the file created as it contains sensitive information about the PHP environment and the ubuntu server. It can always be recreated if the information is needed later.
 
+```
 $ sudo rm /var/www/projectLEMP/info.php
+```
 
-STEP 6 - Retrieving data from MySQL database with PHP
+# STEP 6 - Retrieving data from MySQL database with PHP
+# DevOpsTraining
+**DevOps/Cloud Training Material**
 
-Create a new user with the mysql_native_password authentication method in order to be able to connect to MySQL database from PHP.
-Create a database named todo_database and a user named todo_user
+# Step 6 - Retrieving Data from MySQL Database with PHP
 
-First, connect to the MySQL console using the root account.
+In this step, you will create a test database (DB) with a simple "To do list" and configure access to it, so the Nginx website will be able to query data from the DB and display it.
 
-$ sudo mysql -p
+At the time of this writing, the native MySQL PHP library `mysqlnd` doesn’t support `caching_sha2_authentication`, the default authentication method for MySQL 8. We’ll need to create a new user with the `mysql_native_password` authentication method to connect to the MySQL database from PHP.
 
-Create a new database
+We will create a database named `example_database` and a user named `example_user`, but you can replace these names with different values.
 
-$ CREATE DATABASE todo_database;
+## Step 6.1: Create the Database and User
 
-![alt text](Images/new_db_created.PNG)
+First, connect to the MySQL console using the root account:
 
-Create a new user and grant the user full privileges on the new database.
+    sudo mysql
 
-CREATE USER 'todo_user'@'%' IDENTIFIED WITH mysql_native_password BY 'Passw0rd123$';
+To create a new database, run the following command from your MySQL console:
 
-GRANT ALL ON todo_database.* TO 'todo_user'@'%';
+    CREATE DATABASE `example_database`;
+![alt text](./image/retrieveData1.png)
 
-![alt text](Images/user_creation_and_privilege.PNG)
+Now you can create a new user and grant them full privileges on the database you have just created.
 
-Type 'exit' to exit shell.
+The following command creates a new user named `example_user`, using `mysql_native_password` as the default authentication method. We’re defining this user’s password as `PassWord.1`, but you should replace this value with a secure password of your own choosing.
 
-Login to MySQL console with the user custom credentials and confirm that you have access to todo_database.
+    CREATE USER 'example_user'@'%' IDENTIFIED WITH mysql_native_password BY 'PassWord.1';
 
-$ mysql -u todo_user -p
+Now we need to give this user permission over the `example_database` database:
 
-SHOW DATABASES;
+    GRANT ALL ON example_database.* TO 'example_user'@'%';
 
-![alt text](Images/db_details_captured.PNG)
+This will give the `example_user` user full privileges over the `example_database` database while preventing this user from creating or modifying other databases on your server.
 
-Create a test table named todo_list.
+![alt text](./image/retrieveData2.png)
 
-From MySQL console, run the following:
+Now exit the MySQL shell with:
 
-CREATE TABLE todo_database.todo_list (
-  item_id INT AUTO_INCREMENT,
-  content VARCHAR(255),
-  PRIMARY KEY(item_id)
-);
+    mysql> exit
 
-Insert a few rows of content to the test table.
+## Step 6.2: Verify the New User
 
-INSERT INTO todo_database.todo_list (content) VALUES ("My first important item");
+You can test if the new user has the proper permissions by logging in to the MySQL console again, this time using the custom user credentials:
 
-INSERT INTO todo_database.todo_list (content) VALUES ("My second important item");
+    mysql -u example_user -p
 
-INSERT INTO todo_database.todo_list (content) VALUES ("My third important item");
+Notice the `-p` flag in this command, which will prompt you for the password used when creating the `example_user` user. After logging in to the MySQL console, confirm that you have access to the `example_database` database:
 
-![alt text](Images/rows_inserted.PNG)
+    SHOW DATABASES;
 
-To confirm that the data was successfully saved to the table run:
+This will give you the following output:
 
-SELECT * FROM todo_database.todo_list;
+![alt text](./image/retrieveData3.png)
 
-![alt text](Images/query_table_details.PNG)
+## Step 6.3: Create a Test Table
 
-Type 'exit'
+Next, we’ll create a test table named `todo_list`. From the MySQL console, run the following statement:
 
-Create a PHP script that will connect to MySQL and query the content.
+    mysql> CREATE TABLE example_database.todo_list (
+        item_id INT AUTO_INCREMENT,
+        content VARCHAR(255),
+        PRIMARY KEY(item_id)
+    );
 
-Create a new PHP file in the custom web root directory
+![alt text](./image/retrieveData4.png)
 
-$ sudo nano /var/www/projectLEMP/todo_list.php
+Insert a few rows of content in the test table. You might want to repeat the next command a few times, using different values:
 
-Copy the content below into the todo_list.php script.
+    INSERT INTO example_database.todo_list (content) VALUES ("My first important item");
 
-<?php
-$user = "todo_user";
-$password = "Admin123$";
-$database = "todo_database";
-$table = "todo_list";
+To confirm that the data was successfully saved to your table, run:
 
-try {
-  $db = new PDO("mysql:host=localhost;dbname=$database", $user, $password);
-  echo "<h2>TODO</h2><ol>";
-  foreach($db->query("SELECT content FROM $table") as $row) {
-    echo "<li>" . $row['content'] . "</li>";
-  }
-  echo "</ol>";
-} catch (PDOException $e) {
-    print "Error!: " . $e->getMessage() . "<br/>";
-    die();
-}
-?>
+    SELECT * FROM example_database.todo_list;
 
-![alt text](Images/contents_of_php_script.PNG)
+You’ll see the following output:
 
-I accessed this page in the web browser by visiting the domain name or public IP address configured for the website, followed by /todo_list.php: 
+![alt text](./image/retrieveData5.png)
 
-http://<public_IP>/todo_list.php
+After confirming that you have valid data in your test table, you can exit the MySQL console:
 
-![alt text](Images/php_site_ip_access.PNG)
+    mysql> exit
+
+## Step 6.4: Create a PHP Script to Retrieve Data
+
+Now you can create a PHP script that will connect to MySQL and query for your content. Create a new PHP file in your custom web root directory using your preferred editor. We’ll use `nano` for that:
+
+    nano /var/www/projectLEMP/todo_list.php
+
+The following PHP script connects to the MySQL database, queries for the content of the `todo_list` table, and displays the results in a list. If there is a problem with the database connection, it will throw an exception.
+
+Copy this content into your `todo_list.php` script:
+
+    <?php
+    $user = "example_user";
+    $password = "PassWord.1";
+    $database = "example_database";
+    $table = "todo_list";
+
+    try {
+      $db = new PDO("mysql:host=localhost;dbname=$database", $user, $password);
+      echo "<h2>TODO</h2><ol>";
+      foreach($db->query("SELECT content FROM $table") as $row) {
+        echo "<li>" . $row['content'] . "</li>";
+      }
+      echo "</ol>";
+    } catch (PDOException $e) {
+        print "Error!: " . $e->getMessage() . "<br/>";
+        die();
+    }
+
+Save and close the file when you are done editing.
+
+## Step 6.5: Access the PHP Script
+
+You can now access this page in your web browser by visiting the domain name or public IP address configured for your website, followed by `/todo_list.php`:
+
+    http://<Public_domain_or_IP>/todo_list.php
+
+You should see a page like this, showing the content you’ve inserted in your test table:
+
+![alt text](./image/retrieveData6.png)
+
+That means your PHP environment is ready to connect and interact with your MySQL server.
+
+
+
+
+
+
+
 
 
